@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kurye Asistanı PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = { theme: { extend: { colors: { darkBg: '#0f172a', cardBg: '#1e293b', brandBlue: '#3b82f6', brandGreen: '#10b981', brandRed: '#ef4444', brandOrange: '#f59e0b', brandPurple: '#8b5cf6' } } } }
+    </script>
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+    </style>
+</head>
+<body class="bg-darkBg text-white font-sans h-screen flex flex-col overflow-hidden">
+
+    <!-- Üst Header -->
+    <header class="bg-cardBg shadow-lg p-4 flex justify-between items-center border-b border-gray-800 z-10 shrink-0">
+        <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brandBlue to-brandGreen">
+            <i class="fa-solid fa-bolt text-brandOrange mr-1"></i> Asistan PRO
+        </h1>
+        <div class="flex gap-2">
+            <button onclick="window.open('https://mgm.gov.tr/tahmin/il-ve-ilceler.aspx?il=Uşak', '_blank')" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded-lg text-sm shadow-lg">
+                <i class="fa-solid fa-cloud-sun-rain"></i>
+            </button>
+            <button onclick="showHistory()" class="bg-brandBlue hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm shadow-lg">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </button>
+            <button onclick="showZReport()" class="bg-brandOrange hover:bg-orange-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg">
+                Z Raporu
+            </button>
+        </div>
+    </header>
+
+    <!-- Ana İçerik -->
+    <main class="flex-1 overflow-y-auto p-4 pb-24 space-y-6">
+        
+        <!-- SEKME 1: ANA SAYFA -->
+        <div id="tab-home" class="tab-content active space-y-5">
+            <div class="bg-cardBg p-4 rounded-xl border border-gray-700 shadow-md">
+                <div class="flex justify-between text-sm mb-2">
+                    <span class="text-gray-400 font-semibold">Günlük Kazanç Hedefi</span>
+                    <span class="text-brandGreen font-bold"><span id="targetCurrent">0</span> / 1500 ₺</span>
+                </div>
+                <div class="w-full bg-gray-800 rounded-full h-2.5">
+                    <div id="targetBar" class="bg-gradient-to-r from-brandBlue to-brandGreen h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-cardBg p-3 rounded-xl border-l-4 border-brandBlue shadow-sm">
+                    <p class="text-gray-400 text-[10px] font-bold mb-1">KASAYA VERİLECEK</p>
+                    <p class="text-xl font-bold" id="shopTotal">0 ₺</p>
+                </div>
+                <div class="bg-cardBg p-3 rounded-xl border-l-4 border-brandGreen shadow-sm">
+                    <p class="text-gray-400 text-[10px] font-bold mb-1">NET KAZANCIN</p>
+                    <p class="text-xl font-bold text-brandGreen" id="courierNet">0 ₺</p>
+                </div>
+                <div class="bg-cardBg p-3 rounded-xl border-l-4 border-brandPurple shadow-sm">
+                    <p class="text-gray-400 text-[10px] font-bold mb-1">TOPLAM BAHŞİŞ</p>
+                    <p class="text-xl font-bold text-brandPurple" id="tipTotal">0 ₺</p>
+                </div>
+                <div class="bg-cardBg p-3 rounded-xl border-l-4 border-brandRed shadow-sm">
+                    <p class="text-gray-400 text-[10px] font-bold mb-1">TOPLAM MASRAF</p>
+                    <p class="text-xl font-bold text-brandRed" id="expenseTotal">0 ₺</p>
+                </div>
+            </div>
+
+            <div class="bg-cardBg p-4 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-md font-bold mb-3 text-brandBlue"><i class="fa-solid fa-box-open mr-2"></i>Paket Gir</h2>
+                <div class="grid grid-cols-2 gap-3 mb-3">
+                    <select id="platformSelect" class="col-span-2 bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
+                        <option value="Esnaf">🏪 Esnaf / Dükkan Kuryesi</option>
+                        <option value="Trendyol Go">🟠 Trendyol Go</option>
+                        <option value="Getir">🟣 Getir</option>
+                        <option value="Yemeksepeti">🔴 Yemeksepeti</option>
+                    </select>
+                    <input type="number" id="packageAmount" placeholder="Tutar (₺)" class="bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
+                    <input type="number" id="courierCut" placeholder="Hak Ediş (₺)" class="bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
+                    <select id="paymentMethod" class="bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
+                        <option value="Nakit">💵 Nakit</option>
+                        <option value="Kredi Kartı">💳 POS/Kart</option>
+                        <option value="Online">🌐 Online</option>
+                    </select>
+                    <input type="number" id="tipAmount" placeholder="Bahşiş (₺)" class="bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
+                </div>
+                <button onclick="addDelivery()" class="w-full bg-gradient-to-r from-brandBlue to-blue-700 text-white font-bold py-3 rounded-lg active:scale-95 transition-transform">KAYDET</button>
+            </div>
+
+            <div class="bg-cardBg p-4 rounded-xl shadow-lg border border-gray-700">
+                <h2 class="text-md font-bold mb-3 text-brandRed"><i class="fa-solid fa-gas-pump mr-2"></i>Masraf Çık</h2>
+                <div class="flex gap-2">
+                    <select id="expenseType" class="w-1/2 bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
+                        <option value="Yakıt">Yakıt</option>
+                        <option value="Yemek">Yemek</option>
+                        <option value="Motor Bakım">Motor Bakım</option>
+                        <option value="Diğer">Diğer</option>
+                    </select>
+                    <input type="number" id="expenseAmount" placeholder="Tutar (₺)" class="w-1/2 bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
+                </div>
+                <button onclick="addExpense()" class="w-full bg-brandRed hover:bg-red-600 text-white font-bold py-2 rounded-lg mt-3 active:scale-95 transition-transform">Masrafı Ekle</button>
+            </div>
+        </div>
+
+        <!-- SEKME 2: GARAJ -->
+        <div id="tab-garage" class="tab-content space-y-4">
+            <div class="bg-cardBg p-5 rounded-xl border border-gray-700 text-center">
+                <i class="fa-solid fa-motorcycle text-5xl text-gray-500 mb-3"></i>
+                <h2 class="text-xl font-bold text-white">Fury 125</h2>
+                <p class="text-sm text-gray-400">Bakım Takip Tablosu</p>
+            </div>
+            <div class="bg-cardBg p-4 rounded-xl border border-gray-700">
+                <ul class="space-y-3" id="maintenanceList"></ul>
+                <div class="flex gap-2 mt-4">
+                    <input type="text" id="newMaintenance" placeholder="Yeni bakım notu..." class="flex-1 bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
+                    <button onclick="addMaintenance()" class="bg-brandOrange text-white px-4 rounded-lg font-bold"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEKME 3: NOTLAR -->
+        <div id="tab-notes" class="tab-content space-y-4">
+            <div class="bg-cardBg p-4 rounded-xl border border-gray-700 flex flex-col h-full">
+                <h3 class="font-bold text-brandGreen mb-3"><i class="fa-solid fa-map-location-dot mr-2"></i>Önemli Adresler & Şifreler</h3>
+                <textarea id="quickNotes" oninput="saveNotes()" rows="15" placeholder="Kapı şifreleri, sorunlu adresler..." class="w-full flex-1 bg-darkBg border border-gray-700 rounded-lg p-3 text-white text-sm focus:outline-none resize-none"></textarea>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Alt Navigasyon -->
+    <nav class="bg-cardBg border-t border-gray-800 fixed bottom-0 w-full z-20 pb-safe">
+        <div class="flex justify-around items-center p-3">
+            <button onclick="switchTab('home')" id="nav-home" class="nav-btn text-brandBlue flex flex-col items-center w-1/4">
+                <i class="fa-solid fa-house text-xl mb-1"></i><span class="text-[10px] font-bold">Ana Sayfa</span>
+            </button>
+            <button onclick="switchTab('garage')" id="nav-garage" class="nav-btn text-gray-500 hover:text-white flex flex-col items-center w-1/4">
+                <i class="fa-solid fa-screwdriver-wrench text-xl mb-1"></i><span class="text-[10px] font-bold">Garaj</span>
+            </button>
+            <button onclick="switchTab('notes')" id="nav-notes" class="nav-btn text-gray-500 hover:text-white flex flex-col items-center w-1/4">
+                <i class="fa-solid fa-clipboard text-xl mb-1"></i><span class="text-[10px] font-bold">Notlar</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Z Raporu Modal -->
+    <div id="zReportModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
+        <div class="bg-cardBg border border-gray-700 p-6 rounded-2xl w-full max-w-sm shadow-2xl relative">
+            <button onclick="closeZReport()" class="absolute top-4 right-4 text-gray-400"><i class="fa-solid fa-times text-2xl"></i></button>
+            <div class="text-center mb-5">
+                <i class="fa-solid fa-file-invoice-dollar text-4xl text-brandOrange mb-2"></i>
+                <h2 class="text-2xl font-bold text-white">GÜN SONU RAPORU</h2>
+            </div>
+            <div class="space-y-2 text-sm bg-darkBg p-4 rounded-xl border border-gray-800">
+                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Atılan Paket:</span><span class="font-bold text-white" id="zTotalPackages">0</span></div>
+                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Kasa Nakit:</span><span class="font-bold text-brandOrange" id="zShopCash">0 ₺</span></div>
+                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Kasa POS:</span><span class="font-bold text-brandBlue" id="zShopCard">0 ₺</span></div>
+                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Bahşiş:</span><span class="font-bold text-brandPurple" id="zTotalTip">0 ₺</span></div>
+                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Masraflar:</span><span class="font-bold text-brandRed" id="zTotalExpense">0 ₺</span></div>
+                <div class="flex justify-between pt-2">
+                    <span class="font-bold text-white">NET KAZANÇ:</span><span class="font-bold text-2xl text-brandGreen" id="zNetCourier">0 ₺</span>
+                </div>
+            </div>
+            <button onclick="saveDayAndReset()" class="w-full bg-brandGreen text-white font-bold py-3 rounded-lg mt-4 flex justify-center items-center">
+                <i class="fa-solid fa-floppy-disk mr-2"></i> Günü Kaydet & Sıfırla
+            </button>
+        </div>
+    </div>
+
+    <!-- Geçmiş Raporlar Modal -->
+    <div id="historyModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
+        <div class="bg-cardBg border border-gray-700 p-6 rounded-2xl w-full max-w-sm shadow-2xl relative max-h-[80vh] flex flex-col">
+            <button onclick="closeHistory()" class="absolute top-4 right-4 text-gray-400"><i class="fa-solid fa-times text-xl"></i></button>
+            <h2 class="text-xl font-bold text-white text-center mb-4"><i class="fa-solid fa-history mr-2"></i>Geçmiş Günler</h2>
+            <div id="historyList" class="overflow-y-auto space-y-3 flex-1 pr-2"></div>
+            <button onclick="clearHistory()" class="w-full bg-brandRed text-white font-bold py-2 rounded-lg mt-4 text-sm">Tüm Geçmişi Sil</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. VERİ YÖNETİMİ (SADECE TELEFON HAFIZASI) ---
+        let data = JSON.parse(localStorage.getItem('kuryeLocalPro')) || { 
+            deliveries: [], 
+            expenses: [], 
+            history: [], // Geçmiş günleri burada tutacağız
+            maintenance: [{ id: 1, task: "Yağ seviyesi kontrolü", done: false }], 
+            notes: "" 
+        };
+        let currentReportData = {};
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(el => { el.classList.remove('text-brandBlue'); el.classList.add('text-gray-500'); });
+            document.getElementById('nav-' + tabId).classList.replace('text-gray-500', 'text-brandBlue');
+        }
+
+        function saveData() { localStorage.setItem('kuryeLocalPro', JSON.stringify(data)); updateUI(); }
+
+        function addDelivery() {
+            const platform = document.getElementById('platformSelect').value;
+            const amount = parseFloat(document.getElementById('packageAmount').value) || 0;
+            const courierCut = parseFloat(document.getElementById('courierCut').value) || 0;
+            const tip = parseFloat(document.getElementById('tipAmount').value) || 0;
+            const method = document.getElementById('paymentMethod').value;
+
+            if (amount === 0 && courierCut === 0) return alert("Tutarı girmeyi unuttun.");
+
+            data.deliveries.push({ platform, amount, courierCut, tip, method, time: new Date().getTime() });
+            document.getElementById('packageAmount').value = ''; document.getElementById('courierCut').value = ''; document.getElementById('tipAmount').value = '';
+            saveData();
+        }
+
+        function addExpense() {
+            const type = document.getElementById('expenseType').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value) || 0;
+            if (amount === 0) return;
+            data.expenses.push({ type, amount, time: new Date().getTime() });
+            document.getElementById('expenseAmount').value = ''; saveData();
+        }
+
+        function renderMaintenance() {
+            document.getElementById('maintenanceList').innerHTML = data.maintenance.map(m => `
+                <li class="flex items-center justify-between bg-darkBg p-3 rounded-lg border border-gray-700">
+                    <span class="${m.done ? 'line-through text-gray-500' : 'text-white'} text-sm">${m.task}</span>
+                    <input type="checkbox" ${m.done ? 'checked' : ''} onchange="toggleMaintenance(${m.id})" class="w-5 h-5 accent-brandOrange">
+                </li>`).join('');
+        }
+
+        function addMaintenance() {
+            const task = document.getElementById('newMaintenance').value;
+            if(task) { data.maintenance.push({ id: Date.now(), task, done: false }); document.getElementById('newMaintenance').value = ''; saveData(); }
+        }
+
+        function toggleMaintenance(id) { const item = data.maintenance.find(m => m.id === id); if(item) { item.done = !item.done; saveData(); } }
+        function saveNotes() { data.notes = document.getElementById('quickNotes').value; localStorage.setItem('kuryeLocalPro', JSON.stringify(data)); }
+
+        function updateUI() {
+            let shopTotal = 0, shopCash = 0, shopCard = 0, courierGross = 0, tipTotal = 0, totalExpense = 0;
+
+            data.deliveries.forEach(d => {
+                let shopShare = d.method !== 'Online' ? d.amount - d.courierCut : 0;
+                if(d.method === 'Nakit') shopCash += shopShare;
+                if(d.method === 'Kredi Kartı') shopCard += shopShare;
+                shopTotal += shopShare; courierGross += d.courierCut; tipTotal += d.tip;
+            });
+            data.expenses.forEach(e => totalExpense += e.amount);
+            
+            let courierNet = courierGross + tipTotal - totalExpense;
+
+            document.getElementById('shopTotal').innerText = shopTotal + " ₺";
+            document.getElementById('courierNet').innerText = courierNet + " ₺";
+            document.getElementById('tipTotal').innerText = tipTotal + " ₺";
+            document.getElementById('expenseTotal').innerText = totalExpense + " ₺";
+
+            document.getElementById('targetCurrent').innerText = courierNet;
+            document.getElementById('targetBar').style.width = Math.min((courierNet / 1500) * 100, 100) + "%";
+
+            currentReportData = {
+                tarih: new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}),
+                paketSayisi: data.deliveries.length, dukkanNakit: shopCash, dukkanPos: shopCard, 
+                bahsis: tipTotal, masraf: totalExpense, kuryeNet: courierNet
+            };
+
+            document.getElementById('zTotalPackages').innerText = currentReportData.paketSayisi;
+            document.getElementById('zShopCash').innerText = currentReportData.dukkanNakit + " ₺";
+            document.getElementById('zShopCard').innerText = currentReportData.dukkanPos + " ₺";
+            document.getElementById('zTotalTip').innerText = currentReportData.bahsis + " ₺";
+            document.getElementById('zTotalExpense').innerText = currentReportData.masraf + " ₺";
+            document.getElementById('zNetCourier').innerText = currentReportData.kuryeNet + " ₺";
+
+            renderMaintenance(); document.getElementById('quickNotes').value = data.notes || "";
+        }
+
+        function showZReport() { document.getElementById('zReportModal').classList.remove('hidden'); }
+        function closeZReport() { document.getElementById('zReportModal').classList.add('hidden'); }
+
+        // Günü Kaydet ve Sıfırla (TELEFON HAFIZASINA)
+        function saveDayAndReset() {
+            if(data.deliveries.length === 0) return alert("Atılmış paket yok!");
+            
+            // Mevcut günü geçmişe ekle
+            data.history.unshift(currentReportData); // En üste ekler
+            
+            // Bugünün kayıtlarını temizle
+            data.deliveries = []; 
+            data.expenses = []; 
+            
+            saveData(); 
+            closeZReport();
+            alert("Rapor başarıyla kaydedildi. Yeni gün başladı!");
+        }
+
+        // Geçmişi Göster
+        function showHistory() {
+            document.getElementById('historyModal').classList.remove('hidden');
+            const list = document.getElementById('historyList');
+            
+            if(data.history.length === 0) {
+                list.innerHTML = '<p class="text-gray-400 text-center py-4">Henüz geçmiş rapor yok.</p>';
+                return;
+            }
+            
+            list.innerHTML = '';
+            data.history.forEach(r => {
+                list.innerHTML += `
+                <div class="bg-gray-800 p-3 rounded-lg border border-gray-700 text-sm mb-2 shadow-sm">
+                    <div class="flex justify-between border-b border-gray-600 pb-1 mb-2">
+                        <span class="font-bold text-brandBlue">${r.tarih}</span>
+                        <span class="text-gray-400">${r.paketSayisi} Paket</span>
+                    </div>
+                    <div class="flex justify-between text-xs mb-1">
+                        <span class="text-gray-400">Dükkana Nakit:</span>
+                        <span class="text-brandOrange">${r.dukkanNakit} ₺</span>
+                    </div>
+                    <div class="flex justify-between font-bold mt-2 pt-1 border-t border-gray-700">
+                        <span class="text-white">Net Kazanç:</span>
+                        <span class="text-brandGreen text-lg">${r.kuryeNet} ₺</span>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function closeHistory() { document.getElementById('historyModal').classList.add('hidden'); }
+        
+        function clearHistory() {
+            if(confirm("Tüm geçmiş kayıtlar silinecek. Emin misin?")) {
+                data.history = [];
+                saveData();
+                closeHistory();
+            }
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>
