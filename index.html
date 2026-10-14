@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kurye Asistanı PRO</title>
+    <title>Kurye Asistanı ULTRA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
-        tailwind.config = { theme: { extend: { colors: { darkBg: '#0f172a', cardBg: '#1e293b', brandBlue: '#3b82f6', brandGreen: '#10b981', brandRed: '#ef4444', brandOrange: '#f59e0b', brandPurple: '#8b5cf6' } } } }
+        tailwind.config = { theme: { extend: { colors: { darkBg: '#0f172a', cardBg: '#1e293b', brandBlue: '#3b82f6', brandGreen: '#10b981', brandRed: '#ef4444', brandOrange: '#f59e0b', brandPurple: '#8b5cf6', brandWhatsApp: '#25D366' } } } }
     </script>
     <style>
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .fab-button { box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5); }
     </style>
 </head>
 <body class="bg-darkBg text-white font-sans h-screen flex flex-col overflow-hidden">
@@ -21,44 +22,54 @@
     <!-- Üst Header -->
     <header class="bg-cardBg shadow-lg p-4 flex justify-between items-center border-b border-gray-800 z-10 shrink-0">
         <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brandBlue to-brandGreen">
-            <i class="fa-solid fa-bolt text-brandOrange mr-1"></i> Asistan PRO
+            <i class="fa-solid fa-motorcycle text-brandOrange mr-1"></i> Asistan ULTRA
         </h1>
         <div class="flex gap-2">
-            <button onclick="window.open('https://mgm.gov.tr/tahmin/il-ve-ilceler.aspx?il=Uşak', '_blank')" class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded-lg text-sm shadow-lg">
-                <i class="fa-solid fa-cloud-sun-rain"></i>
+            <button onclick="showHistory()" class="bg-brandBlue hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm shadow-lg active:scale-95 transition-transform">
+                <i class="fa-solid fa-chart-line"></i>
             </button>
-            <button onclick="showHistory()" class="bg-brandBlue hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm shadow-lg">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-            </button>
-            <button onclick="showZReport()" class="bg-brandOrange hover:bg-orange-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg">
+            <button onclick="showZReport()" class="bg-brandOrange hover:bg-orange-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg active:scale-95 transition-transform">
                 Z Raporu
             </button>
         </div>
     </header>
 
     <!-- Ana İçerik -->
-    <main class="flex-1 overflow-y-auto p-4 pb-24 space-y-5">
+    <main class="flex-1 overflow-y-auto p-4 pb-24 space-y-5 relative">
         
         <!-- SEKME 1: ANA SAYFA -->
         <div id="tab-home" class="tab-content active space-y-5">
             
+            <!-- MESAİ KRONOMETRESİ & HEDEF -->
             <div class="bg-cardBg p-4 rounded-xl border border-gray-700 shadow-md">
+                <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
+                    <div>
+                        <span class="text-xs text-gray-400 block mb-1">Vardiya Süresi</span>
+                        <div class="font-mono text-xl font-bold text-white flex items-center" id="shiftTimerDisplay">00:00:00</div>
+                    </div>
+                    <button id="shiftBtn" onclick="toggleShift()" class="bg-brandGreen text-white px-4 py-2 rounded-lg text-sm font-bold active:scale-95 transition-colors shadow-lg">
+                        <i class="fa-solid fa-play mr-1"></i> Başla
+                    </button>
+                </div>
+
                 <div class="flex justify-between text-sm mb-2">
-                    <span class="text-gray-400 font-semibold">Günlük Kazanç Hedefi</span>
+                    <span class="text-gray-400 font-semibold">Günlük Hedef</span>
                     <span class="text-brandGreen font-bold"><span id="targetCurrent">0</span> / 1500 ₺</span>
                 </div>
                 <div class="w-full bg-gray-800 rounded-full h-2.5">
                     <div id="targetBar" class="bg-gradient-to-r from-brandBlue to-brandGreen h-2.5 rounded-full" style="width: 0%"></div>
                 </div>
+                <div class="text-center mt-2 text-xs text-gray-400" id="hourlyRateDisplay">Saatlik Kazancın: Bekleniyor...</div>
             </div>
 
+            <!-- ÖZET KARTLARI -->
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-cardBg p-3 rounded-xl border-l-4 border-brandBlue shadow-sm">
-                    <p class="text-gray-400 text-[10px] font-bold mb-1">KASAYA VERİLECEK NAKİT</p>
+                    <p class="text-gray-400 text-[10px] font-bold mb-1">DÜKKANA NAKİT</p>
                     <p class="text-xl font-bold" id="shopTotal">0 ₺</p>
                 </div>
                 <div class="bg-cardBg p-3 rounded-xl border-l-4 border-brandGreen shadow-sm">
-                    <p class="text-gray-400 text-[10px] font-bold mb-1">NET KAZANCIN (Senin)</p>
+                    <p class="text-gray-400 text-[10px] font-bold mb-1">NET KAZANCIN</p>
                     <p class="text-xl font-bold text-brandGreen" id="courierNet">0 ₺</p>
                 </div>
                 <div class="bg-cardBg p-3 rounded-xl border-l-4 border-brandPurple shadow-sm">
@@ -71,25 +82,24 @@
                 </div>
             </div>
 
-            <!-- PAKET GİRİŞ ALANI -->
-            <div class="bg-cardBg p-4 rounded-xl shadow-lg border border-gray-700 relative">
+            <!-- PAKET GİRİŞ ALANI (ID: packageSection ile hedefliyoruz) -->
+            <div id="packageSection" class="bg-cardBg p-4 rounded-xl shadow-lg border border-gray-700 relative">
                 <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
                     <h2 class="text-md font-bold text-brandBlue"><i class="fa-solid fa-box-open mr-2"></i>Paket Gir</h2>
                     <div class="text-xs text-gray-400 flex items-center gap-1">
                         Sabit Hak Ediş:
-                        <input type="number" id="defaultCutInput" onchange="updateDefaultCut()" class="w-12 bg-darkBg text-brandGreen font-bold border border-gray-600 rounded text-center h-6 focus:outline-none focus:border-brandGreen" value="75">
-                        ₺
+                        <input type="number" id="defaultCutInput" onchange="updateDefaultCut()" class="w-12 bg-darkBg text-brandGreen font-bold border border-gray-600 rounded text-center h-6 focus:outline-none focus:border-brandGreen" value="75">₺
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <select id="platformSelect" class="col-span-2 bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
-                        <option value="Esnaf">🏪 Esnaf / Dükkan Kuryesi</option>
+                        <option value="Esnaf">🏪 Esnaf Kuryesi</option>
                         <option value="Trendyol Go">🟠 Trendyol Go</option>
                         <option value="Getir">🟣 Getir</option>
                         <option value="Yemeksepeti">🔴 Yemeksepeti</option>
                     </select>
-                    <input type="number" id="packageAmount" placeholder="Tutar (₺)" class="bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
+                    <input type="number" id="packageAmount" placeholder="Tutar (₺)" class="bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none focus:border-brandBlue focus:ring-1 focus:ring-brandBlue">
                     <input type="number" id="courierCut" placeholder="Hak Ediş (₺)" class="bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
                     <select id="paymentMethod" class="bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
                         <option value="Nakit">💵 Nakit</option>
@@ -102,7 +112,7 @@
                     KAYDET
                 </button>
                 <button onclick="addQuickOnlinePackage()" class="w-full bg-brandPurple/20 border border-brandPurple text-brandPurple hover:bg-brandPurple hover:text-white font-bold py-2 rounded-lg text-sm active:scale-95 transition-all flex items-center justify-center">
-                    <i class="fa-solid fa-bolt mr-2"></i> Hızlı Ekle: Online Paket (Sadece Hak Ediş)
+                    <i class="fa-solid fa-bolt mr-2"></i> Hızlı Ekle: Online Paket
                 </button>
             </div>
 
@@ -113,53 +123,69 @@
                     <select id="expenseType" class="w-1/2 bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
                         <option value="Yakıt">Yakıt</option>
                         <option value="Yemek">Yemek</option>
-                        <option value="Motor Bakım">Motor Bakım</option>
                         <option value="Diğer">Diğer</option>
                     </select>
                     <input type="number" id="expenseAmount" placeholder="Tutar (₺)" class="w-1/2 bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
                 </div>
-                <button onclick="addExpense()" class="w-full bg-brandRed hover:bg-red-600 text-white font-bold py-2 rounded-lg mt-3 active:scale-95 transition-transform">Masrafı Ekle</button>
+                <button onclick="addExpense()" class="w-full bg-brandRed hover:bg-red-600 text-white font-bold py-2 rounded-lg mt-3 active:scale-95 transition-transform">Ekle</button>
             </div>
         </div>
 
         <!-- SEKME 2: GARAJ -->
         <div id="tab-garage" class="tab-content space-y-4">
-            <div class="bg-cardBg p-5 rounded-xl border border-gray-700 text-center">
+            <div class="bg-cardBg p-5 rounded-xl border border-gray-700 text-center shadow-lg">
                 <i class="fa-solid fa-motorcycle text-5xl text-gray-500 mb-3"></i>
                 <h2 class="text-xl font-bold text-white">Motor Garajı</h2>
-                <p class="text-sm text-gray-400">Bakım Takip Tablosu</p>
+                <p class="text-sm text-gray-400">Rutin Bakım Takip</p>
             </div>
             <div class="bg-cardBg p-4 rounded-xl border border-gray-700">
                 <ul class="space-y-3" id="maintenanceList"></ul>
                 <div class="flex gap-2 mt-4">
-                    <input type="text" id="newMaintenance" placeholder="Yeni bakım notu..." class="flex-1 bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
-                    <button onclick="addMaintenance()" class="bg-brandOrange text-white px-4 rounded-lg font-bold"><i class="fa-solid fa-plus"></i></button>
+                    <input type="text" id="newMaintenance" placeholder="Bakım notu..." class="flex-1 bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
+                    <button onclick="addMaintenance()" class="bg-brandOrange text-white px-4 rounded-lg font-bold active:scale-95"><i class="fa-solid fa-plus"></i></button>
                 </div>
             </div>
         </div>
 
-        <!-- SEKME 3: NOTLAR & HARİTA -->
+        <!-- SEKME 3: NOTLAR & HARİTA & WHATSAPP -->
         <div id="tab-notes" class="tab-content space-y-4">
             
+            <!-- YENİ: WHATSAPP MÜŞTERİ ASİSTANI -->
+            <div class="bg-cardBg p-4 rounded-xl border border-gray-700 shadow-lg">
+                <h3 class="font-bold text-brandWhatsApp mb-3"><i class="fa-brands fa-whatsapp mr-2"></i>WhatsApp Hızlı Mesaj</h3>
+                <input type="tel" id="waPhone" placeholder="05XX Veya 5XX Numarayı Gir..." class="w-full bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none focus:border-brandWhatsApp mb-3">
+                
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <button onclick="sendWa('Siparişiniz yola çıktı, 5 dakikaya geliyorum.')" class="bg-brandWhatsApp/20 border border-brandWhatsApp text-brandWhatsApp hover:bg-brandWhatsApp hover:text-white py-2 rounded-lg font-bold transition-all active:scale-95">Geliyorum</button>
+                    <button onclick="sendWa('Siparişiniz için adresteyim, zile basmıyorum, teslim alabilirsiniz.')" class="bg-brandWhatsApp/20 border border-brandWhatsApp text-brandWhatsApp hover:bg-brandWhatsApp hover:text-white py-2 rounded-lg font-bold transition-all active:scale-95">Kapıdayım (Zilsiz)</button>
+                    <button onclick="sendWa('Adresinizi bulamadım, WhatsApp üzerinden mevcut konumunuzu atar mısınız?')" class="bg-brandWhatsApp/20 border border-brandWhatsApp text-brandWhatsApp hover:bg-brandWhatsApp hover:text-white py-2 rounded-lg font-bold transition-all active:scale-95 col-span-2">Konum İste</button>
+                </div>
+                <p class="text-[10px] text-gray-400 mt-2">* Numarayı kaydetmene gerek kalmadan doğrudan WhatsApp sohbetini açar.</p>
+            </div>
+
             <!-- Hızlı Harita & Navigasyon -->
             <div class="bg-cardBg p-4 rounded-xl border border-gray-700 shadow-lg">
-                <h3 class="font-bold text-brandBlue mb-3"><i class="fa-solid fa-location-arrow mr-2"></i>Hızlı Harita</h3>
+                <h3 class="font-bold text-brandBlue mb-3"><i class="fa-solid fa-location-arrow mr-2"></i>Haritada Aç</h3>
                 <div class="flex gap-2">
-                    <input type="text" id="quickMapAddress" placeholder="Adres veya mekan adı yaz..." class="flex-1 bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none focus:border-brandBlue">
-                    <button onclick="openInMaps()" class="bg-brandBlue hover:bg-blue-600 text-white px-4 rounded-lg font-bold transition-colors active:scale-95">
+                    <input type="text" id="quickMapAddress" placeholder="Adres veya mekan adı..." class="flex-1 bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none focus:border-brandBlue">
+                    <button onclick="openInMaps()" class="bg-brandBlue hover:bg-blue-600 text-white px-4 rounded-lg font-bold active:scale-95">
                         <i class="fa-solid fa-route"></i> Git
                     </button>
                 </div>
-                <p class="text-[10px] text-gray-400 mt-2">* APK üzerinden çalışırken doğrudan telefonun Haritalar uygulamasını açar.</p>
             </div>
 
-            <div class="bg-cardBg p-4 rounded-xl border border-gray-700 flex flex-col h-[60vh]">
-                <h3 class="font-bold text-brandGreen mb-3"><i class="fa-solid fa-map-location-dot mr-2"></i>Önemli Adresler & Şifreler</h3>
-                <textarea id="quickNotes" oninput="saveNotes()" placeholder="Kapı şifreleri, sorunlu adresler veya daimi müşterileri buraya not alabilirsin..." class="w-full flex-1 bg-darkBg border border-gray-700 rounded-lg p-3 text-white text-sm focus:outline-none resize-none"></textarea>
+            <div class="bg-cardBg p-4 rounded-xl border border-gray-700 flex flex-col h-[40vh]">
+                <h3 class="font-bold text-brandGreen mb-3"><i class="fa-solid fa-map-location-dot mr-2"></i>Zor Adresler & Şifreler</h3>
+                <textarea id="quickNotes" oninput="saveNotes()" placeholder="Kapı şifreleri..." class="w-full flex-1 bg-darkBg border border-gray-700 rounded-lg p-3 text-white text-sm focus:outline-none resize-none"></textarea>
             </div>
         </div>
 
     </main>
+
+    <!-- YENİ: KAYAN HIZLI EKLE BUTONU (FAB) -->
+    <button onclick="focusPackage()" class="fab-button fixed bottom-20 right-5 bg-gradient-to-r from-brandBlue to-blue-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl z-30 active:scale-90 transition-transform">
+        <i class="fa-solid fa-plus text-2xl"></i>
+    </button>
 
     <!-- Alt Navigasyon -->
     <nav class="bg-cardBg border-t border-gray-800 fixed bottom-0 w-full z-20 pb-safe">
@@ -171,7 +197,7 @@
                 <i class="fa-solid fa-screwdriver-wrench text-xl mb-1"></i><span class="text-[10px] font-bold">Garaj</span>
             </button>
             <button onclick="switchTab('notes')" id="nav-notes" class="nav-btn text-gray-500 hover:text-white flex flex-col items-center w-1/4">
-                <i class="fa-solid fa-clipboard text-xl mb-1"></i><span class="text-[10px] font-bold">Notlar</span>
+                <i class="fa-solid fa-clipboard text-xl mb-1"></i><span class="text-[10px] font-bold">Asistan</span>
             </button>
         </div>
     </nav>
@@ -180,47 +206,60 @@
     <div id="zReportModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
         <div class="bg-cardBg border border-gray-700 p-6 rounded-2xl w-full max-w-sm shadow-2xl relative">
             <button onclick="closeZReport()" class="absolute top-4 right-4 text-gray-400"><i class="fa-solid fa-times text-2xl"></i></button>
-            <div class="text-center mb-5">
+            <div class="text-center mb-4">
                 <i class="fa-solid fa-file-invoice-dollar text-4xl text-brandOrange mb-2"></i>
                 <h2 class="text-2xl font-bold text-white">GÜN SONU RAPORU</h2>
             </div>
             <div class="space-y-2 text-sm bg-darkBg p-4 rounded-xl border border-gray-800">
                 <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Atılan Paket:</span><span class="font-bold text-white" id="zTotalPackages">0</span></div>
-                
                 <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-brandBlue font-bold">Paketlerden Hak Ediş:</span><span class="font-bold text-brandBlue" id="zPackageEarnings">0 ₺</span></div>
                 <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-brandPurple font-bold">Kazanılan Bahşiş:</span><span class="font-bold text-brandPurple" id="zTotalTip">0 ₺</span></div>
                 <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Dükkana Nakit:</span><span class="font-bold text-brandOrange" id="zShopCash">0 ₺</span></div>
-                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Dükkan POS:</span><span class="font-bold text-gray-300" id="zShopCard">0 ₺</span></div>
-                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-brandRed font-bold">Cebinden Çıkan Masraf:</span><span class="font-bold text-brandRed" id="zTotalExpense">0 ₺</span></div>
+                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-brandRed font-bold">Yapılan Masraf:</span><span class="font-bold text-brandRed" id="zTotalExpense">0 ₺</span></div>
+                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Çalışılan Süre:</span><span class="font-bold text-gray-300" id="zTotalTime">00:00</span></div>
                 <div class="flex justify-between pt-2">
                     <span class="font-bold text-white">SANA KALAN NET:</span><span class="font-bold text-2xl text-brandGreen" id="zNetCourier">0 ₺</span>
                 </div>
             </div>
-            <button onclick="saveDayAndReset()" class="w-full bg-brandGreen text-white font-bold py-3 rounded-lg mt-4 flex justify-center items-center">
-                <i class="fa-solid fa-floppy-disk mr-2"></i> Günü Kaydet & Sıfırla
+            <button onclick="saveDayAndReset()" class="w-full bg-brandGreen text-white font-bold py-3 rounded-lg mt-4 flex justify-center items-center active:scale-95">
+                <i class="fa-solid fa-floppy-disk mr-2"></i> Kaydet & Sıfırla
             </button>
         </div>
     </div>
 
     <!-- Geçmiş Raporlar Modal -->
     <div id="historyModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
-        <div class="bg-cardBg border border-gray-700 p-6 rounded-2xl w-full max-w-sm shadow-2xl relative max-h-[80vh] flex flex-col">
+        <div class="bg-cardBg border border-gray-700 p-5 rounded-2xl w-full max-w-md shadow-2xl relative max-h-[90vh] flex flex-col">
             <button onclick="closeHistory()" class="absolute top-4 right-4 text-gray-400"><i class="fa-solid fa-times text-xl"></i></button>
-            <h2 class="text-xl font-bold text-white text-center mb-4"><i class="fa-solid fa-history mr-2"></i>Geçmiş Günler</h2>
-            <div id="historyList" class="overflow-y-auto space-y-3 flex-1 pr-2"></div>
-            <button onclick="clearHistory()" class="w-full bg-brandRed text-white font-bold py-2 rounded-lg mt-4 text-sm">Tüm Geçmişi Sil</button>
+            <h2 class="text-xl font-bold text-white text-center mb-4"><i class="fa-solid fa-chart-pie mr-2"></i>İstatistik & Geçmiş</h2>
+            
+            <div id="monthlyStats" class="bg-gradient-to-r from-gray-800 to-gray-700 p-4 rounded-xl border border-gray-600 mb-3 shadow-md"></div>
+
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <button onclick="exportToCSV()" class="bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg text-xs font-bold active:scale-95"><i class="fa-solid fa-file-excel mr-1"></i> Excel İndir</button>
+                <button onclick="exportBackup()" class="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-xs font-bold active:scale-95"><i class="fa-solid fa-download mr-1"></i> Yedeği Al</button>
+                <button onclick="document.getElementById('importFile').click()" class="bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg text-xs font-bold col-span-2 active:scale-95"><i class="fa-solid fa-upload mr-1"></i> Yedeği Yükle (Kurtar)</button>
+                <input type="file" id="importFile" class="hidden" accept=".json" onchange="importBackup(event)">
+            </div>
+
+            <div id="historyList" class="overflow-y-auto space-y-3 flex-1 pr-2 border-t border-gray-700 pt-3"></div>
+            <button onclick="clearHistory()" class="w-full bg-brandRed text-white font-bold py-2 rounded-lg mt-3 text-sm active:scale-95">Geçmişi Temizle</button>
         </div>
     </div>
 
     <script>
-        // --- VERİ YÖNETİMİ ---
         let data = JSON.parse(localStorage.getItem('kuryeLocalPro')) || { 
-            deliveries: [], expenses: [], history: [], 
-            maintenance: [{ id: 1, task: "Yağ seviyesi kontrolü", done: false }], 
-            notes: "", defaultCut: 75 
+            deliveries: [], expenses: [], history: [], maintenance: [{ id: 1, task: "Yağ seviyesi", done: false }], notes: "", defaultCut: 75 
         };
         if(data.defaultCut === undefined) data.defaultCut = 75;
         let currentReportData = {};
+        
+        // KRONOMETRE DEĞİŞKENLERİ
+        let shiftInterval;
+        let shiftActive = localStorage.getItem('shiftActive') === 'true';
+        let shiftStartMs = parseInt(localStorage.getItem('shiftStartMs')) || 0;
+        let elapsedBefore = parseInt(localStorage.getItem('shiftElapsedBefore')) || 0;
+        let totalElapsedMs = elapsedBefore;
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -229,32 +268,84 @@
             document.getElementById('nav-' + tabId).classList.replace('text-gray-500', 'text-brandBlue');
         }
 
-        function saveData() { localStorage.setItem('kuryeLocalPro', JSON.stringify(data)); updateUI(); }
-
-        // Sabit hakediş miktarını güncelleme
-        function updateDefaultCut() {
-            data.defaultCut = parseFloat(document.getElementById('defaultCutInput').value) || 0;
-            document.getElementById('courierCut').value = data.defaultCut;
-            saveData();
+        // FAB Butonu için
+        function focusPackage() {
+            switchTab('home');
+            const el = document.getElementById('packageAmount');
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => el.focus(), 300);
         }
 
-        // Haritalara Gönder (APK VE MOBİL UYUMLU)
+        function saveData() { localStorage.setItem('kuryeLocalPro', JSON.stringify(data)); updateUI(); }
+
+        function updateDefaultCut() { data.defaultCut = parseFloat(document.getElementById('defaultCutInput').value) || 0; document.getElementById('courierCut').value = data.defaultCut; saveData(); }
+
+        // MESAİ KRONOMETRESİ
+        function toggleShift() {
+            const btn = document.getElementById('shiftBtn');
+            if(!shiftActive) {
+                shiftActive = true;
+                shiftStartMs = Date.now();
+                localStorage.setItem('shiftActive', 'true');
+                localStorage.setItem('shiftStartMs', shiftStartMs);
+                btn.innerHTML = '<i class="fa-solid fa-stop mr-1"></i> Bitir';
+                btn.classList.replace('bg-brandGreen', 'bg-brandRed');
+                startShiftTimer();
+            } else {
+                shiftActive = false;
+                elapsedBefore += (Date.now() - shiftStartMs);
+                localStorage.setItem('shiftActive', 'false');
+                localStorage.setItem('shiftElapsedBefore', elapsedBefore);
+                clearInterval(shiftInterval);
+                btn.innerHTML = '<i class="fa-solid fa-play mr-1"></i> Başla';
+                btn.classList.replace('bg-brandRed', 'bg-brandGreen');
+            }
+            updateUI();
+        }
+
+        function startShiftTimer() {
+            clearInterval(shiftInterval);
+            shiftInterval = setInterval(() => {
+                totalElapsedMs = elapsedBefore + (Date.now() - shiftStartMs);
+                formatAndShowTimer(totalElapsedMs);
+            }, 1000);
+        }
+
+        function formatAndShowTimer(ms) {
+            let totalSec = Math.floor(ms / 1000);
+            let hours = Math.floor(totalSec / 3600);
+            let mins = Math.floor((totalSec % 3600) / 60);
+            let secs = totalSec % 60;
+            document.getElementById('shiftTimerDisplay').innerText = 
+                `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        if(shiftActive) {
+            document.getElementById('shiftBtn').innerHTML = '<i class="fa-solid fa-stop mr-1"></i> Bitir';
+            document.getElementById('shiftBtn').classList.replace('bg-brandGreen', 'bg-brandRed');
+            startShiftTimer();
+        } else {
+            formatAndShowTimer(elapsedBefore);
+        }
+
+        // WHATSAPP ASİSTANI
+        function sendWa(msg) {
+            let phone = document.getElementById('waPhone').value.replace(/\s+/g, '');
+            if(!phone) return alert("Lütfen numarayı girin!");
+            if(phone.startsWith('0')) phone = phone.substring(1);
+            if(!phone.startsWith('90')) phone = '90' + phone;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // HARİTALAR İNTENT
         function openInMaps() {
             const address = document.getElementById('quickMapAddress').value.trim();
-            if(!address) return alert("Lütfen bir adres veya mekan adı yazın.");
+            if(!address) return alert("Lütfen adres yazın.");
             const encodedAddress = encodeURIComponent(address + " Uşak"); 
-            
-            // Eğer cihaz Android ise doğrudan telefonun yüklü Haritalar uygulamasını zorla açar
             if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                // Android intent
                 window.location.href = `intent://maps.google.com/maps?q=${encodedAddress}#Intent;scheme=https;package=com.google.android.apps.maps;end;`;
-                
-                // Fallback (iPhone veya Intent desteklemeyen cihazlar için direkt link)
-                setTimeout(() => {
-                    window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
-                }, 1000);
+                setTimeout(() => { window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`; }, 1000);
             } else {
-                // Bilgisayar veya normal tarayıcı için
                 window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
             }
         }
@@ -270,16 +361,12 @@
             if (amount === 0 && method !== 'Online') return alert("Tutarı girmeyi unuttun.");
 
             data.deliveries.push({ platform, amount, courierCut, tip, method, time: new Date().getTime() });
-            
-            document.getElementById('packageAmount').value = ''; 
-            document.getElementById('courierCut').value = data.defaultCut; 
-            document.getElementById('tipAmount').value = '';
+            document.getElementById('packageAmount').value = ''; document.getElementById('courierCut').value = data.defaultCut; document.getElementById('tipAmount').value = '';
             saveData();
         }
 
         function addQuickOnlinePackage() {
-            const platform = document.getElementById('platformSelect').value;
-            data.deliveries.push({ platform, amount: 0, courierCut: data.defaultCut, tip: 0, method: 'Online', time: new Date().getTime() });
+            data.deliveries.push({ platform: document.getElementById('platformSelect').value, amount: 0, courierCut: data.defaultCut, tip: 0, method: 'Online', time: new Date().getTime() });
             saveData();
         }
 
@@ -308,8 +395,7 @@
         function saveNotes() { data.notes = document.getElementById('quickNotes').value; localStorage.setItem('kuryeLocalPro', JSON.stringify(data)); }
 
         function updateUI() {
-            document.getElementById('defaultCutInput').value = data.defaultCut;
-            document.getElementById('courierCut').value = data.defaultCut;
+            document.getElementById('defaultCutInput').value = data.defaultCut; document.getElementById('courierCut').value = data.defaultCut;
 
             let shopTotal = 0, shopCash = 0, shopCard = 0, courierGross = 0, tipTotal = 0, totalExpense = 0;
 
@@ -317,9 +403,7 @@
                 let shopShare = d.method !== 'Online' ? d.amount - d.courierCut : 0;
                 if(d.method === 'Nakit') shopCash += shopShare;
                 if(d.method === 'Kredi Kartı') shopCard += shopShare;
-                shopTotal += shopShare; 
-                courierGross += d.courierCut; 
-                tipTotal += d.tip;
+                shopTotal += shopShare; courierGross += d.courierCut; tipTotal += d.tip;
             });
             data.expenses.forEach(e => totalExpense += e.amount);
             
@@ -333,10 +417,22 @@
             document.getElementById('targetCurrent').innerText = courierNet;
             document.getElementById('targetBar').style.width = Math.min((courierNet / 1500) * 100, 100) + "%";
 
+            // SAATLİK KAZANÇ HESAPLAMA
+            let currentElapsed = shiftActive ? (elapsedBefore + (Date.now() - shiftStartMs)) : elapsedBefore;
+            let hoursWorked = currentElapsed / (1000 * 60 * 60);
+            if(hoursWorked > 0.1 && courierNet > 0) {
+                let hourlyRate = Math.round(courierNet / hoursWorked);
+                document.getElementById('hourlyRateDisplay').innerText = `Ortalama Saatlik Kazancın: ${hourlyRate} ₺/Saat`;
+                document.getElementById('hourlyRateDisplay').classList.replace('text-gray-400', 'text-brandGreen');
+            } else {
+                document.getElementById('hourlyRateDisplay').innerText = `Saatlik Kazancın: Bekleniyor...`;
+            }
+
             currentReportData = {
                 tarih: new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}),
                 paketSayisi: data.deliveries.length, paketKazanci: courierGross,
-                dukkanNakit: shopCash, dukkanPos: shopCard, bahsis: tipTotal, masraf: totalExpense, kuryeNet: courierNet
+                dukkanNakit: shopCash, dukkanPos: shopCard, bahsis: tipTotal, masraf: totalExpense, kuryeNet: courierNet,
+                calisilanSure: document.getElementById('shiftTimerDisplay').innerText
             };
 
             document.getElementById('zTotalPackages').innerText = currentReportData.paketSayisi;
@@ -345,6 +441,7 @@
             document.getElementById('zShopCard').innerText = currentReportData.dukkanPos + " ₺";
             document.getElementById('zTotalTip').innerText = currentReportData.bahsis + " ₺";
             document.getElementById('zTotalExpense').innerText = currentReportData.masraf + " ₺";
+            document.getElementById('zTotalTime').innerText = currentReportData.calisilanSure;
             document.getElementById('zNetCourier').innerText = currentReportData.kuryeNet + " ₺";
 
             renderMaintenance(); document.getElementById('quickNotes').value = data.notes || "";
@@ -358,35 +455,75 @@
             data.history.unshift(currentReportData); 
             data.deliveries = []; 
             data.expenses = []; 
+            
+            // Mesaiyi de sıfırla
+            shiftActive = false; elapsedBefore = 0; shiftStartMs = 0; totalElapsedMs = 0;
+            localStorage.setItem('shiftActive', 'false'); localStorage.setItem('shiftElapsedBefore', 0); clearInterval(shiftInterval);
+            document.getElementById('shiftBtn').innerHTML = '<i class="fa-solid fa-play mr-1"></i> Başla';
+            document.getElementById('shiftBtn').classList.replace('bg-brandRed', 'bg-brandGreen');
+            formatAndShowTimer(0);
+
             saveData(); 
             closeZReport();
         }
 
+        function calculateMonthlyStats() {
+            const now = new Date(); const currentMonth = now.getMonth(); const currentYear = now.getFullYear();
+            let monthlyPackages = 0, monthlyNet = 0, monthlyExpense = 0;
+            data.history.forEach(r => {
+                const parts = r.tarih.split(' ')[0].split('.');
+                if(parts.length === 3) {
+                    if((parseInt(parts[1]) - 1) === currentMonth && parseInt(parts[2]) === currentYear) {
+                        monthlyPackages += r.paketSayisi || 0; monthlyNet += r.kuryeNet || 0; monthlyExpense += r.masraf || 0;
+                    }
+                }
+            });
+            const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+            document.getElementById('monthlyStats').innerHTML = `
+                <h3 class="text-brandBlue font-bold text-center border-b border-gray-600 pb-1 mb-2">BU AYKİ ÖZET (${monthNames[currentMonth]})</h3>
+                <div class="flex justify-between text-sm mb-1"><span class="text-gray-300">Bu Ay Atılan Paket:</span><span class="font-bold text-white">${monthlyPackages}</span></div>
+                <div class="flex justify-between text-sm mb-1"><span class="text-gray-300">Aylık Toplam Masraf:</span><span class="font-bold text-brandRed">${monthlyExpense} ₺</span></div>
+                <div class="flex justify-between text-lg mt-2 pt-2 border-t border-gray-500"><span class="text-white font-bold">AYLIK NET KAZANÇ:</span><span class="font-bold text-brandGreen">${monthlyNet} ₺</span></div>`;
+        }
+
+        function exportToCSV() {
+            if(data.history.length === 0) return alert("İndirilecek geçmiş veri yok.");
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            csvContent += "Tarih,Sure,Paket Sayisi,Paket Kazanci,Bahsis,Dukkan Nakit,Masraf,Net Kazanc\n";
+            data.history.forEach(r => { csvContent += `${r.tarih},${r.calisilanSure||'-'},${r.paketSayisi},${r.paketKazanci},${r.bahsis},${r.dukkanNakit},${r.masraf},${r.kuryeNet}\n`; });
+            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", "Z_Raporlari_Excel.csv");
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        function exportBackup() {
+            const link = document.createElement("a"); link.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data)));
+            link.setAttribute("download", "kurye_pro_yedek.json"); document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        function importBackup(event) {
+            const file = event.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if(importedData.history && importedData.deliveries) { data = importedData; saveData(); alert("Yedek başarıyla yüklendi!"); window.location.reload(); } else { alert("Hata: Geçersiz dosya!"); }
+                } catch(err) { alert("Dosya okunurken hata oluştu."); }
+            }; reader.readAsText(file);
+        }
+
         function showHistory() {
-            document.getElementById('historyModal').classList.remove('hidden');
+            calculateMonthlyStats(); document.getElementById('historyModal').classList.remove('hidden');
             const list = document.getElementById('historyList');
             if(data.history.length === 0) return list.innerHTML = '<p class="text-gray-400 text-center py-4">Geçmiş rapor yok.</p>';
-            
             list.innerHTML = '';
             data.history.forEach(r => {
                 list.innerHTML += `
                 <div class="bg-gray-800 p-3 rounded-lg border border-gray-700 text-sm mb-2 shadow-sm">
                     <div class="flex justify-between border-b border-gray-600 pb-1 mb-2">
-                        <span class="font-bold text-brandBlue">${r.tarih}</span>
-                        <span class="text-gray-400">${r.paketSayisi} Paket</span>
+                        <span class="font-bold text-brandBlue">${r.tarih}</span><span class="text-gray-400">${r.paketSayisi} Pkt | ${r.calisilanSure||''}</span>
                     </div>
-                    <div class="flex justify-between text-xs mb-1">
-                        <span class="text-gray-400">Dükkana Nakit:</span>
-                        <span class="text-brandOrange">${r.dukkanNakit} ₺</span>
-                    </div>
-                    <div class="flex justify-between text-xs mb-1">
-                        <span class="text-gray-400">Paket Kazancı:</span>
-                        <span class="text-brandBlue">${r.paketKazanci} ₺</span>
-                    </div>
-                    <div class="flex justify-between font-bold mt-2 pt-1 border-t border-gray-700">
-                        <span class="text-white">Net Kazanç:</span>
-                        <span class="text-brandGreen text-lg">${r.kuryeNet} ₺</span>
-                    </div>
+                    <div class="flex justify-between text-xs mb-1"><span class="text-gray-400">Dükkana Nakit:</span><span class="text-brandOrange">${r.dukkanNakit} ₺</span></div>
+                    <div class="flex justify-between font-bold mt-2 pt-1 border-t border-gray-700"><span class="text-white">Net Kazanç:</span><span class="text-brandGreen text-lg">${r.kuryeNet} ₺</span></div>
                 </div>`;
             });
         }
