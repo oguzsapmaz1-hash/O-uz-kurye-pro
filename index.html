@@ -37,10 +37,11 @@
     </header>
 
     <!-- Ana İçerik -->
-    <main class="flex-1 overflow-y-auto p-4 pb-24 space-y-6">
+    <main class="flex-1 overflow-y-auto p-4 pb-24 space-y-5">
         
         <!-- SEKME 1: ANA SAYFA -->
         <div id="tab-home" class="tab-content active space-y-5">
+            
             <div class="bg-cardBg p-4 rounded-xl border border-gray-700 shadow-md">
                 <div class="flex justify-between text-sm mb-2">
                     <span class="text-gray-400 font-semibold">Günlük Kazanç Hedefi</span>
@@ -53,11 +54,11 @@
 
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-cardBg p-3 rounded-xl border-l-4 border-brandBlue shadow-sm">
-                    <p class="text-gray-400 text-[10px] font-bold mb-1">KASAYA VERİLECEK</p>
+                    <p class="text-gray-400 text-[10px] font-bold mb-1">KASAYA VERİLECEK NAKİT</p>
                     <p class="text-xl font-bold" id="shopTotal">0 ₺</p>
                 </div>
                 <div class="bg-cardBg p-3 rounded-xl border-l-4 border-brandGreen shadow-sm">
-                    <p class="text-gray-400 text-[10px] font-bold mb-1">NET KAZANCIN</p>
+                    <p class="text-gray-400 text-[10px] font-bold mb-1">NET KAZANCIN (Senin)</p>
                     <p class="text-xl font-bold text-brandGreen" id="courierNet">0 ₺</p>
                 </div>
                 <div class="bg-cardBg p-3 rounded-xl border-l-4 border-brandPurple shadow-sm">
@@ -70,8 +71,17 @@
                 </div>
             </div>
 
-            <div class="bg-cardBg p-4 rounded-xl shadow-lg border border-gray-700">
-                <h2 class="text-md font-bold mb-3 text-brandBlue"><i class="fa-solid fa-box-open mr-2"></i>Paket Gir</h2>
+            <!-- PAKET GİRİŞ ALANI -->
+            <div class="bg-cardBg p-4 rounded-xl shadow-lg border border-gray-700 relative">
+                <div class="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
+                    <h2 class="text-md font-bold text-brandBlue"><i class="fa-solid fa-box-open mr-2"></i>Paket Gir</h2>
+                    <div class="text-xs text-gray-400 flex items-center gap-1">
+                        Sabit Hak Ediş:
+                        <input type="number" id="defaultCutInput" onchange="updateDefaultCut()" class="w-12 bg-darkBg text-brandGreen font-bold border border-gray-600 rounded text-center h-6 focus:outline-none focus:border-brandGreen" value="75">
+                        ₺
+                    </div>
+                </div>
+                
                 <div class="grid grid-cols-2 gap-3 mb-3">
                     <select id="platformSelect" class="col-span-2 bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
                         <option value="Esnaf">🏪 Esnaf / Dükkan Kuryesi</option>
@@ -88,9 +98,15 @@
                     </select>
                     <input type="number" id="tipAmount" placeholder="Bahşiş (₺)" class="bg-darkBg border border-gray-700 rounded-lg p-2 text-white text-sm focus:outline-none">
                 </div>
-                <button onclick="addDelivery()" class="w-full bg-gradient-to-r from-brandBlue to-blue-700 text-white font-bold py-3 rounded-lg active:scale-95 transition-transform">KAYDET</button>
+                <button onclick="addDelivery()" class="w-full bg-gradient-to-r from-brandBlue to-blue-700 text-white font-bold py-3 rounded-lg active:scale-95 transition-transform mb-2">
+                    KAYDET
+                </button>
+                <button onclick="addQuickOnlinePackage()" class="w-full bg-brandPurple/20 border border-brandPurple text-brandPurple hover:bg-brandPurple hover:text-white font-bold py-2 rounded-lg text-sm active:scale-95 transition-all flex items-center justify-center">
+                    <i class="fa-solid fa-bolt mr-2"></i> Hızlı Ekle: Online Paket (Sadece Hak Ediş)
+                </button>
             </div>
 
+            <!-- MASRAF GİRİŞ ALANI -->
             <div class="bg-cardBg p-4 rounded-xl shadow-lg border border-gray-700">
                 <h2 class="text-md font-bold mb-3 text-brandRed"><i class="fa-solid fa-gas-pump mr-2"></i>Masraf Çık</h2>
                 <div class="flex gap-2">
@@ -157,12 +173,14 @@
             </div>
             <div class="space-y-2 text-sm bg-darkBg p-4 rounded-xl border border-gray-800">
                 <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Atılan Paket:</span><span class="font-bold text-white" id="zTotalPackages">0</span></div>
-                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Kasa Nakit:</span><span class="font-bold text-brandOrange" id="zShopCash">0 ₺</span></div>
-                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Kasa POS:</span><span class="font-bold text-brandBlue" id="zShopCard">0 ₺</span></div>
-                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Bahşiş:</span><span class="font-bold text-brandPurple" id="zTotalTip">0 ₺</span></div>
-                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Masraflar:</span><span class="font-bold text-brandRed" id="zTotalExpense">0 ₺</span></div>
+                
+                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-brandBlue font-bold">Paketlerden Hak Ediş:</span><span class="font-bold text-brandBlue" id="zPackageEarnings">0 ₺</span></div>
+                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-brandPurple font-bold">Kazanılan Bahşiş:</span><span class="font-bold text-brandPurple" id="zTotalTip">0 ₺</span></div>
+                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Dükkana Nakit:</span><span class="font-bold text-brandOrange" id="zShopCash">0 ₺</span></div>
+                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-gray-400">Dükkan POS:</span><span class="font-bold text-gray-300" id="zShopCard">0 ₺</span></div>
+                <div class="flex justify-between border-b border-gray-700 pb-2"><span class="text-brandRed font-bold">Cebinden Çıkan Masraf:</span><span class="font-bold text-brandRed" id="zTotalExpense">0 ₺</span></div>
                 <div class="flex justify-between pt-2">
-                    <span class="font-bold text-white">NET KAZANÇ:</span><span class="font-bold text-2xl text-brandGreen" id="zNetCourier">0 ₺</span>
+                    <span class="font-bold text-white">SANA KALAN NET:</span><span class="font-bold text-2xl text-brandGreen" id="zNetCourier">0 ₺</span>
                 </div>
             </div>
             <button onclick="saveDayAndReset()" class="w-full bg-brandGreen text-white font-bold py-3 rounded-lg mt-4 flex justify-center items-center">
@@ -182,14 +200,18 @@
     </div>
 
     <script>
-        // --- 1. VERİ YÖNETİMİ (SADECE TELEFON HAFIZASI) ---
+        // --- 1. VERİ YÖNETİMİ ---
         let data = JSON.parse(localStorage.getItem('kuryeLocalPro')) || { 
             deliveries: [], 
             expenses: [], 
-            history: [], // Geçmiş günleri burada tutacağız
+            history: [], 
             maintenance: [{ id: 1, task: "Yağ seviyesi kontrolü", done: false }], 
-            notes: "" 
+            notes: "",
+            defaultCut: 75 // Varsayılan paket hakedişi
         };
+        
+        // Eski kayıtlarda defaultCut yoksa 75 ata
+        if(data.defaultCut === undefined) data.defaultCut = 75;
         let currentReportData = {};
 
         function switchTab(tabId) {
@@ -201,17 +223,39 @@
 
         function saveData() { localStorage.setItem('kuryeLocalPro', JSON.stringify(data)); updateUI(); }
 
+        // Sabit hakediş miktarını güncelleme
+        function updateDefaultCut() {
+            data.defaultCut = parseFloat(document.getElementById('defaultCutInput').value) || 0;
+            document.getElementById('courierCut').value = data.defaultCut;
+            saveData();
+        }
+
+        // Normal Paket Ekleme
         function addDelivery() {
             const platform = document.getElementById('platformSelect').value;
             const amount = parseFloat(document.getElementById('packageAmount').value) || 0;
-            const courierCut = parseFloat(document.getElementById('courierCut').value) || 0;
+            // Eğer hakediş boş bırakılırsa varsayılan (75) değerini al
+            let courierCutValue = document.getElementById('courierCut').value;
+            const courierCut = courierCutValue ? parseFloat(courierCutValue) : data.defaultCut;
             const tip = parseFloat(document.getElementById('tipAmount').value) || 0;
             const method = document.getElementById('paymentMethod').value;
 
-            if (amount === 0 && courierCut === 0) return alert("Tutarı girmeyi unuttun.");
+            if (amount === 0 && method !== 'Online') return alert("Tutarı girmeyi unuttun.");
 
             data.deliveries.push({ platform, amount, courierCut, tip, method, time: new Date().getTime() });
-            document.getElementById('packageAmount').value = ''; document.getElementById('courierCut').value = ''; document.getElementById('tipAmount').value = '';
+            
+            // Alanları temizle, ama Hakedişi tekrar 75'e (default) getir
+            document.getElementById('packageAmount').value = ''; 
+            document.getElementById('courierCut').value = data.defaultCut; 
+            document.getElementById('tipAmount').value = '';
+            saveData();
+        }
+
+        // YENİ: Hızlı Tek Tuşla Online Paket Ekleme
+        function addQuickOnlinePackage() {
+            const platform = document.getElementById('platformSelect').value;
+            const cut = data.defaultCut; // Direk 75 ₺ al
+            data.deliveries.push({ platform, amount: 0, courierCut: cut, tip: 0, method: 'Online', time: new Date().getTime() });
             saveData();
         }
 
@@ -240,19 +284,25 @@
         function saveNotes() { data.notes = document.getElementById('quickNotes').value; localStorage.setItem('kuryeLocalPro', JSON.stringify(data)); }
 
         function updateUI() {
+            // UI yüklenirken defaultCut inputlarını doldur
+            document.getElementById('defaultCutInput').value = data.defaultCut;
+            document.getElementById('courierCut').value = data.defaultCut;
+
             let shopTotal = 0, shopCash = 0, shopCard = 0, courierGross = 0, tipTotal = 0, totalExpense = 0;
 
             data.deliveries.forEach(d => {
                 let shopShare = d.method !== 'Online' ? d.amount - d.courierCut : 0;
                 if(d.method === 'Nakit') shopCash += shopShare;
                 if(d.method === 'Kredi Kartı') shopCard += shopShare;
-                shopTotal += shopShare; courierGross += d.courierCut; tipTotal += d.tip;
+                shopTotal += shopShare; 
+                courierGross += d.courierCut; 
+                tipTotal += d.tip;
             });
             data.expenses.forEach(e => totalExpense += e.amount);
             
             let courierNet = courierGross + tipTotal - totalExpense;
 
-            document.getElementById('shopTotal').innerText = shopTotal + " ₺";
+            document.getElementById('shopTotal').innerText = shopCash + " ₺"; // Dükkana verilecek fiziki nakiti gösterir
             document.getElementById('courierNet').innerText = courierNet + " ₺";
             document.getElementById('tipTotal').innerText = tipTotal + " ₺";
             document.getElementById('expenseTotal').innerText = totalExpense + " ₺";
@@ -262,11 +312,18 @@
 
             currentReportData = {
                 tarih: new Date().toLocaleDateString('tr-TR') + ' ' + new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute:'2-digit'}),
-                paketSayisi: data.deliveries.length, dukkanNakit: shopCash, dukkanPos: shopCard, 
-                bahsis: tipTotal, masraf: totalExpense, kuryeNet: courierNet
+                paketSayisi: data.deliveries.length, 
+                paketKazanci: courierGross,
+                dukkanNakit: shopCash, 
+                dukkanPos: shopCard, 
+                bahsis: tipTotal, 
+                masraf: totalExpense, 
+                kuryeNet: courierNet
             };
 
+            // Z Raporu Verilerini Güncelle
             document.getElementById('zTotalPackages').innerText = currentReportData.paketSayisi;
+            document.getElementById('zPackageEarnings').innerText = currentReportData.paketKazanci + " ₺";
             document.getElementById('zShopCash').innerText = currentReportData.dukkanNakit + " ₺";
             document.getElementById('zShopCard').innerText = currentReportData.dukkanPos + " ₺";
             document.getElementById('zTotalTip').innerText = currentReportData.bahsis + " ₺";
@@ -279,31 +336,19 @@
         function showZReport() { document.getElementById('zReportModal').classList.remove('hidden'); }
         function closeZReport() { document.getElementById('zReportModal').classList.add('hidden'); }
 
-        // Günü Kaydet ve Sıfırla (TELEFON HAFIZASINA)
         function saveDayAndReset() {
             if(data.deliveries.length === 0) return alert("Atılmış paket yok!");
-            
-            // Mevcut günü geçmişe ekle
-            data.history.unshift(currentReportData); // En üste ekler
-            
-            // Bugünün kayıtlarını temizle
+            data.history.unshift(currentReportData); 
             data.deliveries = []; 
             data.expenses = []; 
-            
             saveData(); 
             closeZReport();
-            alert("Rapor başarıyla kaydedildi. Yeni gün başladı!");
         }
 
-        // Geçmişi Göster
         function showHistory() {
             document.getElementById('historyModal').classList.remove('hidden');
             const list = document.getElementById('historyList');
-            
-            if(data.history.length === 0) {
-                list.innerHTML = '<p class="text-gray-400 text-center py-4">Henüz geçmiş rapor yok.</p>';
-                return;
-            }
+            if(data.history.length === 0) return list.innerHTML = '<p class="text-gray-400 text-center py-4">Geçmiş rapor yok.</p>';
             
             list.innerHTML = '';
             data.history.forEach(r => {
@@ -317,6 +362,10 @@
                         <span class="text-gray-400">Dükkana Nakit:</span>
                         <span class="text-brandOrange">${r.dukkanNakit} ₺</span>
                     </div>
+                    <div class="flex justify-between text-xs mb-1">
+                        <span class="text-gray-400">Paket Kazancı:</span>
+                        <span class="text-brandBlue">${r.paketKazanci} ₺</span>
+                    </div>
                     <div class="flex justify-between font-bold mt-2 pt-1 border-t border-gray-700">
                         <span class="text-white">Net Kazanç:</span>
                         <span class="text-brandGreen text-lg">${r.kuryeNet} ₺</span>
@@ -326,14 +375,7 @@
         }
 
         function closeHistory() { document.getElementById('historyModal').classList.add('hidden'); }
-        
-        function clearHistory() {
-            if(confirm("Tüm geçmiş kayıtlar silinecek. Emin misin?")) {
-                data.history = [];
-                saveData();
-                closeHistory();
-            }
-        }
+        function clearHistory() { if(confirm("Tüm geçmiş silinecek. Emin misin?")) { data.history = []; saveData(); closeHistory(); } }
 
         updateUI();
     </script>
